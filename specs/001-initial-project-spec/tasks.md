@@ -39,47 +39,47 @@ description: "Task list for implementing the My Archive platform — 9 user stor
 
 **Purpose**: Database schema, ULID infrastructure, base models, API routing, Redis config — MUST complete before any user story.
 
-- [ ] T006 Enable ULID support: add `use Illuminate\Database\Eloquent\Concerns\HasUlids;` trait and create `app/Traits/UsesUlid.php` base trait for all models
-- [ ] T007 Create migration `database/migrations/xxxx_add_ulid_google_id_role_to_users_table.php` — add google_id (string, nullable, unique), avatar (string, nullable), role (string, default 'user'), change id to ULID pattern
-- [ ] T008 Create migration `database/migrations/xxxx_create_user_preferences_table.php` — ULID id, user_id FK, theme (string default 'system'), locale (string default 'en'), ai_provider (nullable), ai_api_key (nullable, encrypted), ai_model (nullable), notifications_enabled (bool default true), timestamps
-- [ ] T009 [P] Create migration `database/migrations/xxxx_create_archives_table.php` — ULID id, user_id FK, type (string), title (string 255), description (text nullable), is_favorite (bool default false), soft-deletes, timestamps. Add composite indexes: (user_id, type), (user_id, created_at), (user_id, is_favorite)
-- [ ] T010 [P] Create migration `database/migrations/xxxx_create_archive_links_table.php` — ULID id (PK, same as archives.id), url (text), domain (nullable), preview_image (nullable), preview_description (nullable), timestamps
-- [ ] T011 [P] Create migration `database/migrations/xxxx_create_archive_images_table.php` — ULID id (PK), file_path (string 255), mime_type (nullable), width (int nullable), height (int nullable), file_size (int nullable), alt_text (nullable), timestamps
-- [ ] T012 [P] Create migration `database/migrations/xxxx_create_archive_files_table.php` — ULID id (PK), file_path (string 255), mime_type (nullable), file_size (int nullable), original_name (string 255), timestamps
-- [ ] T013 [P] Create migration `database/migrations/xxxx_create_archive_todos_table.php` — ULID id (PK), due_date (date nullable), completed_at (timestamp nullable), priority (string default 'medium'), timestamps
-- [ ] T014 [P] Create migration `database/migrations/xxxx_create_archive_plans_table.php` — ULID id (PK), start_date (date nullable), end_date (date nullable), status (string default 'draft'), progress (int default 0), timestamps
-- [ ] T015 [P] Create migration `database/migrations/xxxx_create_archive_projects_table.php` — ULID id (PK), start_date (date nullable), end_date (date nullable), status (string default 'idea'), repository_url (text nullable), timestamps
-- [ ] T016 [P] Create migration `database/migrations/xxxx_create_archive_courses_table.php` — ULID id (PK), provider (nullable), platform (nullable), completion_status (string default 'not_started'), progress (int default 0), timestamps
-- [ ] T017 [P] Create migration `database/migrations/xxxx_create_archive_books_table.php` — ULID id (PK), author (nullable), isbn (string 20 nullable), pages (int nullable), status (string default 'to_read'), started_at (date nullable), finished_at (date nullable), timestamps
-- [ ] T018 [P] Create migration `database/migrations/xxxx_create_archive_snippets_table.php` — ULID id (PK), code_language (nullable), code_content (text), source_url (text nullable), timestamps
-- [ ] T019 [P] Create migration `database/migrations/xxxx_create_archive_websites_table.php` — ULID id (PK), url (text), domain (nullable), feed_url (text nullable), timestamps
-- [ ] T020 [P] Create migration `database/migrations/xxxx_create_archive_journals_table.php` — ULID id (PK), entry_date (date), mood (string 50 nullable), location (string 255 nullable), timestamps
-- [ ] T021 [P] Create migration `database/migrations/xxxx_create_tags_table.php` — ULID id, user_id FK, name (string 100), color (string 7 nullable), timestamps; unique index on (user_id, name)
-- [ ] T022 [P] Create migration `database/migrations/xxxx_create_taggables_table.php` — tag_id ULID FK, taggable_id ULID, taggable_type string; indexes on (taggable_id, taggable_type) and (tag_id)
-- [ ] T023 [P] Create migration `database/migrations/xxxx_create_activity_logs_table.php` — ULID id, user_id FK, archive_id FK nullable, action (string), description (string 255 nullable), created_at timestamp; indexes on (user_id, created_at) and (user_id, archive_id)
-- [ ] T024 [P] Create migration `database/migrations/xxxx_create_telegram_connections_table.php` — ULID id, user_id FK unique, telegram_chat_id (string 100, unique), telegram_username (nullable), is_active (bool default true), connected_at timestamp, timestamps
-- [ ] T025 [P] Create migration `database/migrations/xxxx_create_ai_conversations_table.php` — ULID id, user_id FK, archive_id FK nullable, title (nullable), timestamps
-- [ ] T026 [P] Create migration `database/migrations/xxxx_create_ai_messages_table.php` — ULID id, conversation_id FK, role (string), content (text), created_at timestamp
-- [ ] T027 Add PostgreSQL full-text search migration: add generated `search_vector tsvector` column to `archives` table with GIN index, weighted by title (A) and description (B)
-- [ ] T028 Configure Redis in `config/database.php` (redis session/cache/queue) — update `.env.example` and `config/cache.php`, `config/session.php`, `config/queue.php`
-- [ ] T029 [P] Update `app/Models/User.php` — add HasUlids trait, add google_id/avatar/role fillable fields, add role enum logic (admin, user), add relationship methods: archives(), tags(), preferences(), telegramConnection(), aiConversations(), activityLogs()
-- [ ] T030 [P] Create `app/Models/UserPreference.php` — fillable fields, belongsTo User relationship
-- [ ] T031 [P] Create `app/Models/Archive.php` — HasUlids, soft-deletes, belongsTo User, morphToMany Tags, polymorphic hasOne to type-specific models (scope by type column), cast is_favorite to bool
-- [ ] T032 [P] Create type-specific models: `app/Models/ArchiveLink.php`, `ArchiveImage.php`, `ArchiveFile.php`, `ArchiveTodo.php`, `ArchivePlan.php`, `ArchiveProject.php`, `ArchiveCourse.php`, `ArchiveBook.php`, `ArchiveSnippet.php`, `ArchiveWebsite.php`, `ArchiveJournal.php` — each with ULID PK, belongsTo Archive
-- [ ] T033 [P] Create `app/Models/Tag.php` — fillable, belongsTo User, morphToMany Archives
-- [ ] T034 [P] Create `app/Models/ActivityLog.php` — immutable (no updated_at), belongsTo User, belongsTo Archive (nullable)
-- [ ] T035 [P] Create `app/Models/TelegramConnection.php` — belongsTo User
-- [ ] T036 [P] Create `app/Models/AiConversation.php` and `AiMessage.php` — belongsTo User, belongsTo Archive (nullable), hasMany messages
-- [ ] T037 [P] Create `app/Enums/ArchiveType.php` — backed enum with all 16 archive types (Note, Link, Article, Image, File, Todo, Plan, Project, Idea, Bookmark, Course, Book, Snippet, Website, Journal, Prompt)
-- [ ] T038 [P] Create `app/Enums/UserRole.php` — Admin and User backed enum
-- [ ] T039 [P] Create `app/Enums/ArchiveStatus.php` — status enum values per type (Todo priority, Plan/Project status, etc.) — keep in a single file with multiple enums or separate files
-- [ ] T040 [P] Create base routing structure: `routes/api.php` with `/api/v1/` prefix, Sanctum auth middleware group, route files for auth/archives/tags/search/dashboard/settings/ai/telegram/admin
-- [ ] T041 [P] Configure Sanctum in `bootstrap/app.php` (API middleware group, token abilities)
-- [ ] T042 [P] Configure Livewire in `config/livewire.php` and `bootstrap/app.php` (layout, asset URL)
-- [ ] T043 [P] Create app layout view `resources/views/layouts/app.blade.php` — Livewire-compatible layout with nav, flash messages, theme class on html tag
-- [ ] T044 [P] Set up auth scaffolding: Livewire login/register components (standard Laravel auth with Livewire)
-- [ ] T045 [P] Create `app/Exceptions/Handler.php` — customize JSON error responses for API (403, 404, 422, 429, 500)
-- [ ] T046 Run `php artisan migrate` and verify all tables created in PostgreSQL
+- [x] T006 Enable ULID support: add `use Illuminate\Database\Eloquent\Concerns\HasUlids;` trait and create `app/Traits/UsesUlid.php` base trait for all models
+- [x] T007 Create migration `database/migrations/xxxx_add_ulid_google_id_role_to_users_table.php` — add google_id (string, nullable, unique), avatar (string, nullable), role (string, default 'user'), change id to ULID pattern
+- [x] T008 Create migration `database/migrations/xxxx_create_user_preferences_table.php` — ULID id, user_id FK, theme (string default 'system'), locale (string default 'en'), ai_provider (nullable), ai_api_key (nullable, encrypted), ai_model (nullable), notifications_enabled (bool default true), timestamps
+- [x] T009 [P] Create migration `database/migrations/xxxx_create_archives_table.php` — ULID id, user_id FK, type (string), title (string 255), description (text nullable), is_favorite (bool default false), soft-deletes, timestamps. Add composite indexes: (user_id, type), (user_id, created_at), (user_id, is_favorite)
+- [x] T010 [P] Create migration `database/migrations/xxxx_create_archive_links_table.php` — ULID id (PK, same as archives.id), url (text), domain (nullable), preview_image (nullable), preview_description (nullable), timestamps
+- [x] T011 [P] Create migration `database/migrations/xxxx_create_archive_images_table.php` — ULID id (PK), file_path (string 255), mime_type (nullable), width (int nullable), height (int nullable), file_size (int nullable), alt_text (nullable), timestamps
+- [x] T012 [P] Create migration `database/migrations/xxxx_create_archive_files_table.php` — ULID id (PK), file_path (string 255), mime_type (nullable), file_size (int nullable), original_name (string 255), timestamps
+- [x] T013 [P] Create migration `database/migrations/xxxx_create_archive_todos_table.php` — ULID id (PK), due_date (date nullable), completed_at (timestamp nullable), priority (string default 'medium'), timestamps
+- [x] T014 [P] Create migration `database/migrations/xxxx_create_archive_plans_table.php` — ULID id (PK), start_date (date nullable), end_date (date nullable), status (string default 'draft'), progress (int default 0), timestamps
+- [x] T015 [P] Create migration `database/migrations/xxxx_create_archive_projects_table.php` — ULID id (PK), start_date (date nullable), end_date (date nullable), status (string default 'idea'), repository_url (text nullable), timestamps
+- [x] T016 [P] Create migration `database/migrations/xxxx_create_archive_courses_table.php` — ULID id (PK), provider (nullable), platform (nullable), completion_status (string default 'not_started'), progress (int default 0), timestamps
+- [x] T017 [P] Create migration `database/migrations/xxxx_create_archive_books_table.php` — ULID id (PK), author (nullable), isbn (string 20 nullable), pages (int nullable), status (string default 'to_read'), started_at (date nullable), finished_at (date nullable), timestamps
+- [x] T018 [P] Create migration `database/migrations/xxxx_create_archive_snippets_table.php` — ULID id (PK), code_language (nullable), code_content (text), source_url (text nullable), timestamps
+- [x] T019 [P] Create migration `database/migrations/xxxx_create_archive_websites_table.php` — ULID id (PK), url (text), domain (nullable), feed_url (text nullable), timestamps
+- [x] T020 [P] Create migration `database/migrations/xxxx_create_archive_journals_table.php` — ULID id (PK), entry_date (date), mood (string 50 nullable), location (string 255 nullable), timestamps
+- [x] T021 [P] Create migration `database/migrations/xxxx_create_tags_table.php` — ULID id, user_id FK, name (string 100), color (string 7 nullable), timestamps; unique index on (user_id, name)
+- [x] T022 [P] Create migration `database/migrations/xxxx_create_taggables_table.php` — tag_id ULID FK, taggable_id ULID, taggable_type string; indexes on (taggable_id, taggable_type) and (tag_id)
+- [x] T023 [P] Create migration `database/migrations/xxxx_create_activity_logs_table.php` — ULID id, user_id FK, archive_id FK nullable, action (string), description (string 255 nullable), created_at timestamp; indexes on (user_id, created_at) and (user_id, archive_id)
+- [x] T024 [P] Create migration `database/migrations/xxxx_create_telegram_connections_table.php` — ULID id, user_id FK unique, telegram_chat_id (string 100, unique), telegram_username (nullable), is_active (bool default true), connected_at timestamp, timestamps
+- [x] T025 [P] Create migration `database/migrations/xxxx_create_ai_conversations_table.php` — ULID id, user_id FK, archive_id FK nullable, title (nullable), timestamps
+- [x] T026 [P] Create migration `database/migrations/xxxx_create_ai_messages_table.php` — ULID id, conversation_id FK, role (string), content (text), created_at timestamp
+- [x] T027 Add PostgreSQL full-text search migration: add generated `search_vector tsvector` column to `archives` table with GIN index, weighted by title (A) and description (B)
+- [x] T028 Configure Redis in `config/database.php` (redis session/cache/queue) — update `.env.example` and `config/cache.php`, `config/session.php`, `config/queue.php`
+- [x] T029 [P] Update `app/Models/User.php` — add HasUlids trait, add google_id/avatar/role fillable fields, add role enum logic (admin, user), add relationship methods: archives(), tags(), preferences(), telegramConnection(), aiConversations(), activityLogs()
+- [x] T030 [P] Create `app/Models/UserPreference.php` — fillable fields, belongsTo User relationship
+- [x] T031 [P] Create `app/Models/Archive.php` — HasUlids, soft-deletes, belongsTo User, morphToMany Tags, polymorphic hasOne to type-specific models (scope by type column), cast is_favorite to bool
+- [x] T032 [P] Create type-specific models: `app/Models/ArchiveLink.php`, `ArchiveImage.php`, `ArchiveFile.php`, `ArchiveTodo.php`, `ArchivePlan.php`, `ArchiveProject.php`, `ArchiveCourse.php`, `ArchiveBook.php`, `ArchiveSnippet.php`, `ArchiveWebsite.php`, `ArchiveJournal.php` — each with ULID PK, belongsTo Archive
+- [x] T033 [P] Create `app/Models/Tag.php` — fillable, belongsTo User, morphToMany Archives
+- [x] T034 [P] Create `app/Models/ActivityLog.php` — immutable (no updated_at), belongsTo User, belongsTo Archive (nullable)
+- [x] T035 [P] Create `app/Models/TelegramConnection.php` — belongsTo User
+- [x] T036 [P] Create `app/Models/AiConversation.php` and `AiMessage.php` — belongsTo User, belongsTo Archive (nullable), hasMany messages
+- [x] T037 [P] Create `app/Enums/ArchiveType.php` — backed enum with all 16 archive types (Note, Link, Article, Image, File, Todo, Plan, Project, Idea, Bookmark, Course, Book, Snippet, Website, Journal, Prompt)
+- [x] T038 [P] Create `app/Enums/UserRole.php` — Admin and User backed enum
+- [x] T039 [P] Create `app/Enums/ArchiveStatus.php` — status enum values per type (Todo priority, Plan/Project status, etc.) — keep in a single file with multiple enums or separate files
+- [x] T040 [P] Create base routing structure: `routes/api.php` with `/api/v1/` prefix, Sanctum auth middleware group, route files for auth/archives/tags/search/dashboard/settings/ai/telegram/admin
+- [x] T041 [P] Configure Sanctum in `bootstrap/app.php` (API middleware group, token abilities)
+- [x] T042 [P] Configure Livewire in `config/livewire.php` and `bootstrap/app.php` (layout, asset URL)
+- [x] T043 [P] Create app layout view `resources/views/layouts/app.blade.php` — Livewire-compatible layout with nav, flash messages, theme class on html tag
+- [x] T044 [P] Set up auth scaffolding: Livewire login/register components (standard Laravel auth with Livewire)
+- [x] T045 [P] Create `app/Exceptions/Handler.php` — customize JSON error responses for API (403, 404, 422, 429, 500)
+- [x] T046 Run `php artisan migrate` and verify all tables created in PostgreSQL
 
 **Checkpoint**: All migrations run cleanly. Models, Enums, base route files, layout view exist. `php artisan test` passes existing tests.
 
