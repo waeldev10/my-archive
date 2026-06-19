@@ -39,14 +39,71 @@ php artisan key:generate
 
 ## Architecture
 
-### Laravel 13.x Structure
+### Domain-Based Modular Architecture
 
-- **Routes** — Defined in `routes/web.php` (web UI) and `routes/console.php` (Artisan commands). No API routes defined yet.
-- **Controllers** — Located in `app/Http/Controllers/`. Currently only a base `Controller` class exists.
-- **Models** — Located in `app/Models/`. Currently only the `User` model, which extends `Authenticatable` and uses `HasFactory` + `Notifiable` traits with PHP 8 attributes (`#[Fillable]`, `#[Hidden]`).
-- **Views** — Blade templates in `resources/views/`. Currently only `welcome.blade.php` with Tailwind CSS.
-- **Providers** — `AppServiceProvider` in `app/Providers/` with empty `register()` and `boot()` methods.
-- **Config** — Standard Laravel config files in `config/`. Key overrides: database-backed sessions, cache, and queues.
+The project uses a domain-based modular architecture under `Modules/` instead of the standard
+Laravel `app/` structure. Each domain module is self-contained with its own classes, views,
+routes, and tests.
+
+```text
+Modules/
+├── Core/              Shared infrastructure (traits, contracts, enums, exceptions, helpers,
+│                      providers, support classes, shared Livewire components, layouts)
+├── Auth/              Authentication, registration, Google OAuth, password reset,
+│                      email verification, user management
+├── Archives/          All 16 archive types — CRUD, business rules, type-specific models
+├── Tags/              Global tag management and tag relationships
+├── Search/            Full-text search, filtered search, abstraction layer
+├── AI/                AI enhancement layer — classification, suggestions, chat
+├── Telegram/          Telegram bot integration, message-to-archive mapping
+├── Dashboard/         Dashboard overview, statistics, activity feed
+├── Settings/          User profile, preferences, theme, API token management
+└── Admin/             Admin user management, system-wide settings
+```
+
+### Core Module Responsibilities
+
+The `Core` module owns all shared infrastructure:
+
+- **Traits** — `UsesUlid`, shared model traits
+- **Contracts** — `SearchEngineInterface`, `AiProviderInterface`, and other shared interfaces
+- **Enums** — `ArchiveType`, `UserRole`, status enums
+- **Exceptions** — Custom exception classes and error handling
+- **Helpers** — Utility/helper functions
+- **Providers** — Shared service providers
+- **Livewire/Components** — Shared/reusable Livewire UI components
+- **View/Layouts** — Application layouts (app.blade.php)
+- **View/Components** — Shared Blade components
+- **Support** — Base classes, support utilities
+
+### Module Internal Structure
+
+Each feature module may contain any of the following:
+
+```text
+Module/
+├── Actions/           Single-responsibility action classes
+├── DTOs/              Data transfer objects
+├── Events/            Event classes
+├── Listeners/         Event listeners
+├── Http/
+│   ├── Controllers/   Web and/or API controllers
+│   ├── Middleware/     Module-specific middleware
+│   └── Requests/      Form request validation
+├── Livewire/          Livewire full-page and nested components
+├── Models/            Eloquent models
+├── Notifications/     Notification classes
+├── Policies/          Authorization policies
+├── Providers/         Module-specific service providers
+├── Repositories/      Data access abstraction
+├── Services/          Application business logic
+├── Views/             Blade templates (Livewire and plain)
+└── routes/            Module-specific route files (optional)
+```
+
+- **Module-specific contracts** (e.g., `SearchEngineInterface`) live inside the module.
+  **Shared contracts** live under `Core/Contracts/`.
+- Cross-module communication SHOULD use events, listeners, or contracts — never direct coupling.
 
 ### Database
 
@@ -81,3 +138,11 @@ Related design artifacts:
 - Quickstart guide: specs/001-initial-project-spec/quickstart.md
 - Research & decisions: specs/001-initial-project-spec/research.md
 <!-- SPECKIT END -->
+
+Communication Rules
+
+* All responses must be in English.
+* All reports, plans, reviews, summaries, and architecture discussions must be written in English.
+* Do not respond in Chinese, Japanese, Korean, or any other language unless explicitly requested.
+* Code comments must be in English.
+* Documentation must be in English.

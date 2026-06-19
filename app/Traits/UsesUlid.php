@@ -10,8 +10,14 @@ trait UsesUlid
 {
     use HasUlids;
 
+    /**
+     * Initialize the ULID trait for this model.
+     *
+     * Sets the model to use unique string IDs (ULIDs) instead of
+     * auto-incrementing integers.
+     */
     public function initializeUsesUlid(): void
     {
-        $this->usesUlids();
+        $this->usesUniqueIds = true;
     }
 }

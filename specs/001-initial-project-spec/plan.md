@@ -123,33 +123,151 @@ specs/001-initial-project-spec/
 ### Source Code (repository root)
 
 ```text
-app/
-├── Actions/
-├── Console/
-│   └── Commands/
-├── DTOs/
-├── Enums/
-├── Events/
-├── Exceptions/
-├── Http/
-│   ├── Controllers/
-│   │   ├── Api/
-│   │   │   └── V1/
-│   │   └── Web/
-│   ├── Middleware/
-│   ├── Requests/
-│   └── Resources/
-├── Listeners/
-├── Livewire/
-├── Models/
-├── Providers/
-├── Repositories/
-├── Services/
-│   ├── Archive/
-│   ├── AI/
-│   ├── Search/
-│   └── Telegram/
-└── Traits/
+Modules/
+├── Core/
+│   ├── Contracts/
+│   ├── Enums/
+│   ├── Exceptions/
+│   ├── Helpers/
+│   ├── Livewire/
+│   │   └── Components/
+│   ├── Providers/
+│   ├── Support/
+│   ├── Traits/
+│   └── View/
+│       ├── Components/
+│       └── Layouts/
+│
+├── Auth/
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Events/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   └── Web/
+│   │   ├── Middleware/
+│   │   └── Requests/
+│   ├── Listeners/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Notifications/
+│   ├── Providers/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── Archives/
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Events/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   └── Web/
+│   │   └── Requests/
+│   ├── Listeners/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Policies/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── Tags/
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   └── Web/
+│   │   └── Requests/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── Search/
+│   ├── Contracts/
+│   ├── DTOs/
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── Api/
+│   ├── Livewire/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── AI/
+│   ├── Actions/
+│   ├── Contracts/
+│   ├── DTOs/
+│   ├── Events/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/
+│   │   └── Requests/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── Telegram/
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Events/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── Api/
+│   │   └── Requests/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── Dashboard/
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   └── Web/
+│   │   └── Resources/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── Settings/
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   ├── Api/
+│   │   │   └── Web/
+│   │   └── Requests/
+│   ├── Livewire/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+└── Admin/
+    ├── Actions/
+    ├── DTOs/
+    ├── Http/
+    │   ├── Controllers/
+    │   │   ├── Api/
+    │   │   └── Web/
+    │   ├── Middleware/
+    │   └── Requests/
+    ├── Livewire/
+    ├── Repositories/
+    ├── Services/
+    └── Views/
 
 config/
 database/
@@ -160,18 +278,6 @@ resources/
 ├── css/
 ├── js/
 └── views/
-    ├── components/
-    ├── layouts/
-    └── livewire/
-        ├── archives/
-        ├── auth/
-        ├── dashboard/
-        ├── tags/
-        ├── search/
-        ├── ai/
-        ├── settings/
-        ├── admin/
-        └── telegram/
 
 routes/
 ├── web.php
@@ -185,11 +291,18 @@ tests/
 docs/
 ```
 
-**Structure Decision**: Standard Laravel 12 monolithic structure with clear
-module organization under `app/Services/` and `app/Livewire/`. Each domain
-module (Archives, Tags, Search, AI, Telegram) gets its own service directory.
-API controllers live under `Http/Controllers/Api/V1/` for versioned separation.
-Web controllers use Livewire full-stack components.
+**Structure Decision**: Domain-based modular architecture under `Modules/` instead
+of the standard Laravel `app/` structure. Each feature module is self-contained
+with its own controllers, Livewire components, models, services, views, and routes.
+The `Core` module owns all shared infrastructure (traits, contracts, enums,
+exceptions, helpers, providers, shared Livewire components, layouts).
+Module-specific contracts live inside their respective modules; cross-cutting
+contracts live in `Core/Contracts/`.
+API controllers live under each module's `Http/Controllers/Api/` for versioned
+separation. Web controllers use Livewire full-stack components.
+All 16 archive types reside inside the `Archives` module.
+Code currently resides under `app/` and will be migrated to `Modules/` in a
+dedicated migration phase.
 
 ## Complexity Tracking
 

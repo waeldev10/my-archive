@@ -98,6 +98,62 @@ api/
 
 ios/ or android/
 └── [platform-specific structure: feature modules, UI flows, platform tests]
+
+# [REMOVE IF UNUSED] Option 4: Modular Laravel (when "Modules/" architecture detected)
+Modules/
+├── Core/                     # Shared infrastructure
+│   ├── Contracts/
+│   ├── Enums/
+│   ├── Exceptions/
+│   ├── Helpers/
+│   ├── Livewire/Components/
+│   ├── Providers/
+│   ├── Support/
+│   ├── Traits/
+│   └── View/
+│       ├── Components/
+│       └── Layouts/
+│
+├── [ModuleName]/             # Feature modules
+│   ├── Actions/
+│   ├── DTOs/
+│   ├── Events/
+│   ├── Http/
+│   │   ├── Controllers/Api/
+│   │   ├── Controllers/Web/
+│   │   └── Requests/
+│   ├── Listeners/
+│   ├── Livewire/
+│   ├── Models/
+│   ├── Policies/
+│   ├── Providers/
+│   ├── Repositories/
+│   ├── Services/
+│   └── Views/
+│
+├── ...                       # Additional feature modules follow same pattern
+└── .../
+
+config/
+database/
+├── migrations/
+└── seeders/
+
+resources/
+├── css/
+├── js/
+└── views/
+
+routes/
+├── web.php
+├── api.php
+└── console.php
+
+tests/
+├── Feature/
+├── Unit/
+
+docs/
 ```
 
 **Structure Decision**: [Document the selected structure and reference the real

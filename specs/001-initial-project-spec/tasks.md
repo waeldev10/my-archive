@@ -5,6 +5,9 @@ description: "Task list for implementing the My Archive platform — 9 user stor
 
 # Tasks: Initial Platform — My Archive
 
+**Target Architecture**: Domain-based modular architecture under `Modules/` (see [plan.md](plan.md)).
+Code currently resides under `app/` and will be migrated to `Modules/` in a dedicated migration phase.
+
 **Input**: Design documents from `specs/001-initial-project-spec/`
 
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/
@@ -16,8 +19,11 @@ description: "Task list for implementing the My Archive platform — 9 user stor
 ## Path Conventions
 
 - All paths are relative to the repository root: `E:\OpenSource\My-Archive\`
-- Laravel app code under `app/`, database under `database/`, tests under `tests/`
+- **Current location**: Code lives under `app/` (standard Laravel structure — will be migrated)
+- **Target location**: Each domain module under `Modules/` (e.g., `Modules/Archives/Models/Archive.php`)
+- Database code under `database/`, tests under `tests/`
 - Frontend views under `resources/views/`, CSS under `resources/css/`, JS under `resources/js/`
+- Task paths use the **current** `app/` location until the migration phase begins
 
 ---
 
@@ -93,19 +99,19 @@ description: "Task list for implementing the My Archive platform — 9 user stor
 
 ### Implementation for User Story 1
 
-- [ ] T047 [P] [US1] Create `app/Http/Controllers/Api/V1/AuthController.php` — register, login, googleLogin, logout, user, forgotPassword, resetPassword, resendVerification endpoints per `contracts/api-auth.md`
-- [ ] T048 [P] [US1] Create `app/Http/Requests/Auth/RegisterRequest.php` — validate name, email, password, password_confirmation
-- [ ] T049 [P] [US1] Create `app/Http/Requests/Auth/LoginRequest.php` — validate email, password
-- [ ] T050 [P] [US1] Create `app/Http/Requests/Auth/ForgotPasswordRequest.php` and `ResetPasswordRequest.php`
-- [ ] T051 [P] [US1] Create `app/Services/AuthService.php` — register logic (create user, send verification email), login with rate limiting (5 attempts), Google OAuth integration, password reset flows
-- [ ] T052 [P] [US1] Create `app/Actions/CreateUserAction.php` — single-responsibility action for user creation with ULID
-- [ ] T053 [P] [US1] Create `app/Http/Resources/UserResource.php` — API resource for user responses
-- [ ] T054 [US1] Wire API routes in `routes/api.php` under `api/v1/auth/*` — register, login, google, logout, password/*, email/verify/*, user
-- [ ] T055 [US1] Implement email verification: create `app/Notifications/VerifyEmailNotification.php` (customizable for Sanctum/Livewire), wire verification routes
-- [ ] T056 [US1] Create Livewire auth components in `app/Livewire/Auth/` — Login.php, Register.php, ForgotPassword.php, ResetPassword.php with corresponding views in `resources/views/livewire/auth/`
-- [ ] T057 [US1] Implement Google OAuth: create `app/Services/SocialiteService.php`, Socialite controller, routes for redirect/callback
-- [ ] T058 [US1] Implement rate limiting in `app/Http/Middleware/LoginRateLimiter.php` — 5 failed attempts, temporary lockout
-- [ ] T059 [US1] Create and run seeder `database/seeders/UserSeeder.php` with a test user for development
+- [x] T047 [P] [US1] Create `app/Http/Controllers/Api/V1/AuthController.php` — register, login, googleLogin, logout, user, forgotPassword, resetPassword, resendVerification endpoints per `contracts/api-auth.md`
+- [x] T048 [P] [US1] Create `app/Http/Requests/Auth/RegisterRequest.php` — validate name, email, password, password_confirmation
+- [x] T049 [P] [US1] Create `app/Http/Requests/Auth/LoginRequest.php` — validate email, password
+- [x] T050 [P] [US1] Create `app/Http/Requests/Auth/ForgotPasswordRequest.php` and `ResetPasswordRequest.php`
+- [x] T051 [P] [US1] Create `app/Services/AuthService.php` — register logic (create user, send verification email), login with rate limiting (5 attempts), Google OAuth integration, password reset flows
+- [x] T052 [P] [US1] Create `app/Actions/CreateUserAction.php` — single-responsibility action for user creation with ULID
+- [x] T053 [P] [US1] Create `app/Http/Resources/UserResource.php` — API resource for user responses
+- [x] T054 [US1] Wire API routes in `routes/api.php` under `api/v1/auth/*` — register, login, google, logout, password/*, email/verify/*, user
+- [x] T055 [US1] Implement email verification: create `app/Notifications/VerifyEmailNotification.php` (customizable for Sanctum/Livewire), wire verification routes
+- [x] T056 [US1] Create Livewire auth components in `app/Livewire/Auth/` — Login.php, Register.php, ForgotPassword.php, ResetPassword.php with corresponding views in `resources/views/livewire/auth/`
+- [x] T057 [US1] Implement Google OAuth: create `app/Services/SocialiteService.php`, Socialite controller, routes for redirect/callback
+- [x] T058 [US1] Implement rate limiting in `app/Http/Middleware/LoginRateLimiter.php` — 5 failed attempts, temporary lockout
+- [x] T059 [US1] Create and run seeder `database/seeders/UserSeeder.php` with a test user for development
 
 **Checkpoint**: Full registration, email verification, login/logout, password reset cycles working via both Web UI and API. Rate limiting enforced after 5 failed attempts.
 

@@ -147,7 +147,7 @@ modules and layers MUST enforce clear boundaries and separation of concerns.
 
 ### Architecture Layers
 
-Each feature MUST follow this layer pattern:
+Each feature module MUST follow this internal layer pattern:
 
 - **Controller**: Thin — delegates immediately to Services or Actions
 - **Service Layer**: Application business logic and orchestration
@@ -156,20 +156,29 @@ Each feature MUST follow this layer pattern:
 - **Actions**: Single-responsibility, reusable operations
 - **Events & Listeners**: Decoupled side effects and cross-module communication
 
+The **Core** module provides shared infrastructure consumed by all feature modules:
+shared contracts, traits, enums, base classes, layouts, and reusable UI components.
+Feature modules MUST pull shared dependencies from Core rather than duplicating them.
+
 ### Modules
 
 | Module | Responsibility |
 |--------|---------------|
-| Dashboard | Statistics, recent archives, quick actions, activity overview |
-| Auth | Login, register, Google OAuth, password reset, email verification |
-| Users | User management, profile, preferences |
-| Archives | All 16 archive types — CRUD, pages, business rules |
-| Tags | Global tag management and tag relationships |
-| Search | Global search, filtered search, advanced search, full-text search |
-| AI | Classification, tag suggestions, summaries, AI chat, knowledge retrieval |
-| Telegram | Bot integration, archive creation from Telegram, AI interaction |
-| Settings | Application settings, theme preferences, user preferences |
-| API | Public API, API authentication, API resources, API versioning |
+| **Core** | Shared infrastructure — traits, contracts, enums, exceptions, helpers, providers, support classes, shared Livewire components, layouts |
+| **Auth** | Registration, login, Google OAuth, password reset, email verification, user profile |
+| **Archives** | All 16 archive types — CRUD, type-specific models, business rules, all archive views |
+| **Tags** | Global tag management and polymorphic tag relationships |
+| **Search** | Full-text search, filtered search, search abstraction layer |
+| **AI** | Classification, tag suggestions, summaries, AI chat, knowledge retrieval, AI provider abstraction |
+| **Telegram** | Bot integration, message-to-archive mapping, AI interaction via Telegram |
+| **Dashboard** | Statistics, recent archives, quick actions, activity overview |
+| **Settings** | User profile, theme preferences, API token management, AI provider configuration |
+| **Admin** | Admin user management, system-wide settings |
+
+**Cross-cutting**: The `Core` module provides shared infrastructure consumed by all modules.
+Shared contracts live under `Core/Contracts/`. Module-specific contracts stay inside their
+own module. The `API` is not a module — it is a cross-cutting concern delivered by each
+module's `Http/Controllers/Api/` subdirectory.
 
 ## Domain Requirements
 

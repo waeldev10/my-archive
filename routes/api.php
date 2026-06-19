@@ -18,8 +18,10 @@ Route::prefix('api/v1')->group(function (): void {
 
     // ===== Public Auth Routes =====
     Route::prefix('auth')->group(function (): void {
-        Route::post('register', [\App\Http\Controllers\Api\V1\AuthController::class, 'register']);
-        Route::post('login', [\App\Http\Controllers\Api\V1\AuthController::class, 'login']);
+        Route::post('register', [\App\Http\Controllers\Api\V1\AuthController::class, 'register'])
+            ->middleware('throttle:10,1');
+        Route::post('login', [\App\Http\Controllers\Api\V1\AuthController::class, 'login'])
+            ->middleware('throttle:5,1');
         Route::post('google', [\App\Http\Controllers\Api\V1\AuthController::class, 'googleLogin']);
         Route::post('password/forgot', [\App\Http\Controllers\Api\V1\AuthController::class, 'forgotPassword']);
         Route::post('password/reset', [\App\Http\Controllers\Api\V1\AuthController::class, 'resetPassword']);
