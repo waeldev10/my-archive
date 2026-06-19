@@ -18,13 +18,13 @@ Route::prefix('api/v1')->group(function (): void {
 
     // ===== Public Auth Routes =====
     Route::prefix('auth')->group(function (): void {
-        Route::post('register', [\App\Http\Controllers\Api\V1\AuthController::class, 'register'])
+        Route::post('register', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'register'])
             ->middleware('throttle:10,1');
-        Route::post('login', [\App\Http\Controllers\Api\V1\AuthController::class, 'login'])
+        Route::post('login', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'login'])
             ->middleware('throttle:5,1');
-        Route::post('google', [\App\Http\Controllers\Api\V1\AuthController::class, 'googleLogin']);
-        Route::post('password/forgot', [\App\Http\Controllers\Api\V1\AuthController::class, 'forgotPassword']);
-        Route::post('password/reset', [\App\Http\Controllers\Api\V1\AuthController::class, 'resetPassword']);
+        Route::post('google', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'googleLogin']);
+        Route::post('password/forgot', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
+        Route::post('password/reset', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'resetPassword']);
     });
 
     // ===== Authenticated Routes =====
@@ -32,9 +32,9 @@ Route::prefix('api/v1')->group(function (): void {
 
         // Auth
         Route::prefix('auth')->group(function (): void {
-            Route::post('logout', [\App\Http\Controllers\Api\V1\AuthController::class, 'logout']);
-            Route::get('user', [\App\Http\Controllers\Api\V1\AuthController::class, 'user']);
-            Route::post('email/verify/resend', [\App\Http\Controllers\Api\V1\AuthController::class, 'resendVerification']);
+            Route::post('logout', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'logout']);
+            Route::get('user', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'user']);
+            Route::post('email/verify/resend', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'resendVerification']);
         });
 
         // Dashboard

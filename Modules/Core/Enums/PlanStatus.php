@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Core\Enums;
+
+enum PlanStatus: string
+{
+    case Draft = 'draft';
+    case Active = 'active';
+    case Completed = 'completed';
+    case Cancelled = 'cancelled';
+}

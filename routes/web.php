@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Auth\ForgotPassword;
-use App\Livewire\Auth\Login;
-use App\Livewire\Auth\Register;
-use App\Livewire\Auth\ResetPassword;
+use Modules\Auth\Livewire\ForgotPassword;
+use Modules\Auth\Livewire\Login;
+use Modules\Auth\Livewire\Register;
+use Modules\Auth\Livewire\ResetPassword;
 use App\Livewire\Dashboard;
 use Illuminate\Support\Facades\Route;
 
@@ -31,8 +31,8 @@ Route::middleware('guest')->group(function (): void {
     Route::get('reset-password/{token}', ResetPassword::class)->name('password.reset');
 
     // Google OAuth
-    Route::get('auth/google/redirect', [\App\Http\Controllers\Auth\SocialiteController::class, 'redirect'])->name('google.redirect');
-    Route::get('auth/google/callback', [\App\Http\Controllers\Auth\SocialiteController::class, 'callback'])->name('google.callback');
+    Route::get('auth/google/redirect', [\Modules\Auth\Http\Controllers\Web\SocialiteController::class, 'redirect'])->name('google.redirect');
+    Route::get('auth/google/callback', [\Modules\Auth\Http\Controllers\Web\SocialiteController::class, 'callback'])->name('google.callback');
 });
 
 // Authenticated routes
