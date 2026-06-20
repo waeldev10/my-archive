@@ -2,101 +2,16 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
 |--------------------------------------------------------------------------
 |
-| REST API at /api/v1/* with Sanctum authentication.
-| All endpoints are versioned under the v1 prefix.
+| Module-specific API routes are loaded by their service providers:
+|   - Auth:     Modules/Auth/Providers/AuthServiceProvider
+|   - Archives: Modules/Archives/Providers/ArchiveServiceProvider
+|
+| Future modules (Tags, Search, Settings, AI, Telegram, Admin, Dashboard)
+| will register their own API routes via their service providers when built.
 |
 */
-
-Route::prefix('api/v1')->group(function (): void {
-
-    // ===== Public Auth Routes =====
-    Route::prefix('auth')->group(function (): void {
-        Route::post('register', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'register'])
-            ->middleware('throttle:10,1');
-        Route::post('login', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'login'])
-            ->middleware('throttle:5,1');
-        Route::post('google', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'googleLogin']);
-        Route::post('password/forgot', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'forgotPassword']);
-        Route::post('password/reset', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'resetPassword']);
-    });
-
-    // ===== Authenticated Routes =====
-    Route::middleware('auth:sanctum')->group(function (): void {
-
-        // Auth
-        Route::prefix('auth')->group(function (): void {
-            Route::post('logout', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'logout']);
-            Route::get('user', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'user']);
-            Route::post('email/verify/resend', [\Modules\Auth\Http\Controllers\Api\AuthController::class, 'resendVerification']);
-        });
-
-        // Dashboard
-        Route::get('dashboard', [\App\Http\Controllers\Api\V1\DashboardController::class, 'index']);
-
-        // Archives — all 16 types
-        Route::prefix('archives')->group(function (): void {
-            Route::get('{type}', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'index']);
-            Route::post('{type}', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'store']);
-            Route::get('{type}/{archive}', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'show']);
-            Route::put('{type}/{archive}', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'update']);
-            Route::delete('{type}/{archive}', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'destroy']);
-            Route::post('{type}/{archive}/restore', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'restore']);
-            Route::delete('{type}/{archive}/force', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'forceDelete']);
-            Route::post('{type}/{archive}/favorite', [\App\Http\Controllers\Api\V1\ArchiveController::class, 'toggleFavorite']);
-        });
-
-        // Tags
-        Route::prefix('tags')->group(function (): void {
-            Route::get('/', [\App\Http\Controllers\Api\V1\TagController::class, 'index']);
-            Route::post('/', [\App\Http\Controllers\Api\V1\TagController::class, 'store']);
-            Route::put('{tag}', [\App\Http\Controllers\Api\V1\TagController::class, 'update']);
-            Route::delete('{tag}', [\App\Http\Controllers\Api\V1\TagController::class, 'destroy']);
-            Route::get('{tag}/archives', [\App\Http\Controllers\Api\V1\TagController::class, 'archives']);
-        });
-
-        // Search
-        Route::get('search', [\App\Http\Controllers\Api\V1\SearchController::class, 'search']);
-
-        // Settings
-        Route::prefix('settings')->group(function (): void {
-            Route::get('/', [\App\Http\Controllers\Api\V1\SettingsController::class, 'index']);
-            Route::put('profile', [\App\Http\Controllers\Api\V1\SettingsController::class, 'updateProfile']);
-            Route::put('preferences', [\App\Http\Controllers\Api\V1\SettingsController::class, 'updatePreferences']);
-            Route::post('tokens', [\App\Http\Controllers\Api\V1\SettingsController::class, 'createToken']);
-            Route::delete('tokens/{token}', [\App\Http\Controllers\Api\V1\SettingsController::class, 'revokeToken']);
-        });
-
-        // AI
-        Route::prefix('ai')->group(function (): void {
-            Route::post('classify', [\App\Http\Controllers\Api\V1\AiController::class, 'classify']);
-            Route::post('tags', [\App\Http\Controllers\Api\V1\AiController::class, 'suggestTags']);
-            Route::post('summarize', [\App\Http\Controllers\Api\V1\AiController::class, 'summarize']);
-            Route::post('chat', [\App\Http\Controllers\Api\V1\AiController::class, 'chat']);
-            Route::get('conversations', [\App\Http\Controllers\Api\V1\AiController::class, 'conversations']);
-            Route::get('conversations/{conversation}', [\App\Http\Controllers\Api\V1\AiController::class, 'showConversation']);
-            Route::delete('conversations/{conversation}', [\App\Http\Controllers\Api\V1\AiController::class, 'deleteConversation']);
-        });
-
-        // Telegram
-        Route::prefix('telegram')->group(function (): void {
-            Route::post('connect', [\App\Http\Controllers\Api\V1\TelegramController::class, 'connect']);
-            Route::get('status', [\App\Http\Controllers\Api\V1\TelegramController::class, 'status']);
-            Route::delete('disconnect', [\App\Http\Controllers\Api\V1\TelegramController::class, 'disconnect']);
-        });
-
-        // Admin
-        Route::prefix('admin')->middleware('admin')->group(function (): void {
-            Route::get('users', [\App\Http\Controllers\Api\V1\AdminController::class, 'listUsers']);
-            Route::put('users/{user}/role', [\App\Http\Controllers\Api\V1\AdminController::class, 'updateUserRole']);
-            Route::get('settings', [\App\Http\Controllers\Api\V1\AdminController::class, 'getSettings']);
-            Route::put('settings', [\App\Http\Controllers\Api\V1\AdminController::class, 'updateSettings']);
-        });
-    });
-});

@@ -11,10 +11,15 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
+        then: function (): void {
+            // Module routes are loaded by their respective service providers.
+            // See: Modules/Auth/Providers/AuthServiceProvider,
+            //      Modules/Archives/Providers/ArchiveServiceProvider
+        },
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'admin' => \Modules\Auth\Http\Middleware\EnsureAdmin::class,
         ]);
 
         $middleware->statefulApi();

@@ -14,9 +14,16 @@ return new class extends Migration
      *
      * Adds a generated tsvector column for PostgreSQL full-text search
      * on the archives table. Weights: title (A), description (B).
+     *
+     * Note: This migration is PostgreSQL-specific and is skipped on
+     * other database drivers (e.g., SQLite used in tests).
      */
     public function up(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
         Schema::table('archives', function (Blueprint $table) {
             // Add tsvector column — generated column approach requires
             // PostgreSQL 12+. We use a stored generated column.
@@ -39,6 +46,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
         Schema::table('archives', function (Blueprint $table) {
             DB::statement('DROP INDEX IF EXISTS archives_search_vector_idx');
             DB::statement('ALTER TABLE archives DROP COLUMN IF EXISTS search_vector');

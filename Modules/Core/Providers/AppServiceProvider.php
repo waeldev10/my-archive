@@ -1,9 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Modules\Core\Providers;
 
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
+use Modules\Core\Models\PersonalAccessToken;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,9 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register module view namespaces so that views can be referenced
-        // as core::layouts.app, auth::auth.login, etc.
+        // Register the core view namespace so views can be referenced as core::layouts.app
         View::addNamespace('core', __DIR__.'/../Views');
-        View::addNamespace('auth', __DIR__.'/../../Auth/Views');
+
+        // Use custom Sanctum token model with ULID support
+        Sanctum::usePersonalAccessTokenModel(PersonalAccessToken::class);
     }
 }

@@ -6,7 +6,9 @@ namespace Modules\Auth\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Modules\Auth\Notifications\VerifyEmailNotification;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -16,10 +18,23 @@ use Laravel\Sanctum\HasApiTokens;
 use Modules\Core\Enums\UserRole;
 use Modules\Core\Traits\UsesUlid;
 
+#[UseFactory(UserFactory::class)]
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, HasApiTokens, UsesUlid;
+    use \Illuminate\Auth\MustVerifyEmail {
+        sendEmailVerificationNotification as protected traitSendEmailVerification;
+    }
+
+    /**
+     * Send the email verification notification,
+     * using the custom VerifyEmailNotification class.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyEmailNotification());
+    }
 
     /**
      * The attributes that are mass assignable.

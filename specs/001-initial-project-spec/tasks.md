@@ -125,23 +125,37 @@ Code currently resides under `app/` and will be migrated to `Modules/` in a dedi
 
 ### Implementation for User Story 2
 
-- [ ] T060 [P] [US2] Create `app/Http/Controllers/Api/V1/ArchiveController.php` — index, show, store, update, destroy, restore, forceDelete, toggleFavorite per `contracts/api-archives.md`
-- [ ] T061 [P] [US2] Create `app/Http/Requests/Archive/StoreArchiveRequest.php` — validation rules common to all types plus type-specific field validation
-- [ ] T062 [P] [US2] Create `app/Http/Requests/Archive/UpdateArchiveRequest.php` — same as store but all fields optional
-- [ ] T063 [P] [US2] Create `app/Http/Resources/ArchiveResource.php` — API resource including type-specific fields and tags
-- [ ] T064 [P] [US2] Create `app/Services/Archive/ArchiveService.php` — CRUD logic with ownership checks, handles type-specific extension tables
-- [ ] T065 [P] [US2] Create `app/Services/Archive/ArchiveFactory.php` — determines which type-specific service/model to use based on archive type
-- [ ] T066 [P] [US2] Create `app/Actions/CreateArchiveAction.php` — single-responsibility action for archive creation (base + extension)
-- [ ] T067 [P] [US2] Create `app/Actions/UpdateArchiveAction.php` — update base fields + extension table
-- [ ] T068 [P] [US2] Create `app/Repositories/ArchiveRepository.php` — query scoping by user, type, favorite, tag filters, pagination
-- [ ] T069 [P] [US2] Create `app/DTOs/ArchiveData.php` — type-safe DTO for archive data transfer between layers
-- [ ] T070 [US2] Create Livewire archive components in `app/Livewire/Archives/` — ArchiveList.php, ArchiveCreate.php, ArchiveEdit.php, ArchiveShow.php per archive type (start with Note as template, then generalize)
-- [ ] T071 [US2] Create Livewire views in `resources/views/livewire/archives/` — type list, create, edit, show templates with Tailwind CSS
-- [ ] T072 [US2] Create `app/Http/Controllers/Web/ArchiveController.php` — web routes pointing to Livewire full-page components
-- [ ] T073 [US2] Define web routes in `routes/web.php` for archive listing, create, show, edit, delete, favorite toggle, restore
-- [ ] T074 [US2] Implement file upload handling in `app/Services/Archive/FileUploadService.php` — validate type/size, store in `storage/app/archives/{user_id}/{type}/{archive_id}.{ext}` per research.md Decision 3
-- [ ] T075 [US2] Implement ownership middleware: `app/Http/Middleware/EnsureArchiveOwnership.php` — 403 if not owner
-- [ ] T076 [US2] Implement soft-delete restore and permanent delete (30-day cleanup scheduler command in `app/Console/Commands/CleanupTrashedArchives.php`)
+- [x] T060 [P] [US2] Create `app/Http/Controllers/Api/V1/ArchiveController.php` — index, show, store, update, destroy, restore, forceDelete, toggleFavorite per `contracts/api-archives.md` *(migrated to `Modules/Archives/Http/Controllers/Api/ArchiveController.php`)*
+- [x] T061 [P] [US2] Create `app/Http/Requests/Archive/StoreArchiveRequest.php` — validation rules common to all types plus type-specific field validation *(migrated to `Modules/Archives/Http/Requests/StoreArchiveRequest.php`)*
+
+- [x] T062 [P] [US2] Create `app/Http/Requests/Archive/UpdateArchiveRequest.php` — same as store but all fields optional *(migrated to `Modules/Archives/Http/Requests/UpdateArchiveRequest.php`)*
+
+- [x] T063 [P] [US2] Create `app/Http/Resources/ArchiveResource.php` — API resource including type-specific fields and tags *(migrated to `Modules/Archives/Http/Resources/ArchiveResource.php`)*
+
+- [x] T064 [P] [US2] Create `app/Services/Archive/ArchiveService.php` — CRUD logic with ownership checks, handles type-specific extension tables *(migrated to `Modules/Archives/Services/ArchiveService.php`)*
+
+- [x] T065 [P] [US2] Create `app/Services/Archive/ArchiveFactory.php` — determines which type-specific service/model to use based on archive type *(migrated to `Modules/Archives/Services/ArchiveFactory.php`)*
+
+- [x] T066 [P] [US2] Create `app/Actions/CreateArchiveAction.php` — single-responsibility action for archive creation (base + extension) *(migrated to `Modules/Archives/Actions/CreateArchiveAction.php`)*
+
+- [x] T067 [P] [US2] Create `app/Actions/UpdateArchiveAction.php` — update base fields + extension table *(migrated to `Modules/Archives/Actions/UpdateArchiveAction.php`)*
+
+- [x] T068 [P] [US2] Create `app/Repositories/ArchiveRepository.php` — query scoping by user, type, favorite, tag filters, pagination *(migrated to `Modules/Archives/Repositories/ArchiveRepository.php`)*
+
+- [x] T069 [P] [US2] Create `app/DTOs/ArchiveData.php` — type-safe DTO for archive data transfer between layers *(migrated to `Modules/Archives/DTOs/ArchiveData.php`)*
+- [x] T070 [US2] Create Livewire archive components in `app/Livewire/Archives/` — ArchiveList.php, ArchiveCreate.php, ArchiveEdit.php, ArchiveShow.php per archive type *(migrated to `Modules/Archives/Livewire/` as generic (all-type) components)*
+
+- [x] T071 [US2] Create Livewire views in `resources/views/livewire/archives/` — type list, create, edit, show templates with Tailwind CSS *(migrated to `Modules/Archives/Views/archives/`)*
+
+- [ ] T072 [US2] Create `app/Http/Controllers/Web/ArchiveController.php` — web routes pointing to Livewire full-page components *(NOT IMPLEMENTED — web routes route directly to Livewire component classes; valid Livewire v4 pattern, but no controller file exists)*
+
+- [~] T073 [US2] Define web routes in `routes/web.php` for archive listing, create, show, edit, delete, favorite toggle, restore *(PARTIAL — list/create/show/edit have routes; delete/favorite toggle are Livewire actions inside components; restore has no web route)*
+
+- [x] T074 [US2] Implement file upload handling in `app/Services/Archive/FileUploadService.php` — validate type/size, store in `storage/app/archives/{user_id}/{type}/{archive_id}.{ext}` per research.md Decision 3 *(migrated to `Modules/Archives/Services/FileUploadService.php`; path uses `images`/`files` subdirs instead of `{type}`)*
+
+- [x] T075 [US2] Implement ownership middleware: `app/Http/Middleware/EnsureArchiveOwnership.php` — 403 if not owner *(migrated to `Modules/Archives/Http/Middleware/EnsureArchiveOwnership.php`)*
+
+- [x] T076 [US2] Implement soft-delete restore and permanent delete (30-day cleanup scheduler command in `app/Console/Commands/CleanupTrashedArchives.php`) *(migrated to `Modules/Archives/Console/CleanupTrashedArchives.php`; scheduled daily in `routes/console.php`)*
 
 **Checkpoint**: All 16 archive types creatable, viewable, listable, editable, deletable via both Web UI and API. Type-specific fields saved correctly. File uploads working.
 
