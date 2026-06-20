@@ -7,6 +7,7 @@ namespace Modules\Archives\Actions;
 use Illuminate\Support\Facades\DB;
 use Modules\Archives\DTOs\ArchiveData;
 use Modules\Archives\Models\Archive;
+use Modules\Tags\Models\Tag;
 
 class CreateArchiveAction
 {
@@ -27,7 +28,7 @@ class CreateArchiveAction
             $this->createExtension($archive, $data);
 
             if (! empty($data->tags)) {
-                $this->syncTags($archive, $data->tags);
+                $this->syncTags($archive, $userId, $data->tags);
             }
 
             return $archive;
@@ -58,19 +59,31 @@ class CreateArchiveAction
     }
 
     /**
-     * Sync tags by name.
+     * Sync tags by name, using bulk operations to avoid N+1.
      *
      * @param array<int, string> $tagNames
      */
-    private function syncTags(Archive $archive, array $tagNames): void
+    private function syncTags(Archive $archive, string $userId, array $tagNames): void
     {
+        $uniqueNames = array_unique(array_map('trim', $tagNames));
         $tagIds = [];
-        foreach ($tagNames as $name) {
-            $tag = \Modules\Tags\Models\Tag::firstOrCreate([
-                'user_id' => $archive->user_id,
-                'name' => trim($name),
-            ]);
-            $tagIds[] = $tag->id;
+
+        // Bulk-load existing tags for this user to avoid N SELECTs
+        $existing = Tag::where('user_id', $userId)
+            ->whereIn('name', $uniqueNames)
+            ->get()
+            ->keyBy('name');
+
+        foreach ($uniqueNames as $name) {
+            if ($existing->has($name)) {
+                $tagIds[] = $existing->get($name)->id;
+            } else {
+                $tag = Tag::create([
+                    'user_id' => $userId,
+                    'name' => $name,
+                ]);
+                $tagIds[] = $tag->id;
+            }
         }
 
         $archive->tags()->sync($tagIds);

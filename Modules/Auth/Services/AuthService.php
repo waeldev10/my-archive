@@ -20,20 +20,38 @@ use Illuminate\Support\Facades\Password;
 class AuthService
 {
     /**
-     * Create a new user and issue a Sanctum token.
+     * Create a new user and issue a Sanctum token (API registration).
      *
      * @return array{user: User, token: string}
      */
     public function register(array $data): array
+    {
+        $user = $this->registerUser($data);
+
+        $token = $user->createToken('auth-token')->plainTextToken;
+
+        return ['user' => $user, 'token' => $token];
+    }
+
+    /**
+     * Create a new user for web registration (no API token).
+     */
+    public function registerWeb(array $data): User
+    {
+        return $this->registerUser($data);
+    }
+
+    /**
+     * Create a new user and dispatch the Registered event.
+     */
+    private function registerUser(array $data): User
     {
         $action = app(CreateUserAction::class);
         $user = $action->execute($data['name'], $data['email'], $data['password']);
 
         event(new Registered($user));
 
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        return ['user' => $user, 'token' => $token];
+        return $user;
     }
 
     /**

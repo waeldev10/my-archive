@@ -9,6 +9,11 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use Livewire\Livewire;
+use Modules\Auth\Livewire\ForgotPassword;
+use Modules\Auth\Livewire\Login;
+use Modules\Auth\Livewire\Register;
+use Modules\Auth\Livewire\ResetPassword;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,8 +30,13 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register event listeners for auth-related events.
-        // This ensures verification emails are sent on registration.
+        // Register Livewire components
+        Livewire::component('auth.login', Login::class);
+        Livewire::component('auth.register', Register::class);
+        Livewire::component('auth.forgot-password', ForgotPassword::class);
+        Livewire::component('auth.reset-password', ResetPassword::class);
+
+        // Register event listeners for auth-related events
         Event::listen(
             Registered::class,
             SendEmailVerificationNotification::class,

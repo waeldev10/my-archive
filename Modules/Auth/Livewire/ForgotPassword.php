@@ -47,7 +47,6 @@ class ForgotPassword extends Component
      */
     public function render()
     {
-        return view('auth::auth.forgot-password')
-            ->layout('core::layouts.app');
+        return view('auth::auth.forgot-password');
     }
 }

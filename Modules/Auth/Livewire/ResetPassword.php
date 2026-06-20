@@ -61,6 +61,8 @@ class ResetPassword extends Component
         if ($status === Password::PASSWORD_RESET) {
             session()->flash('success', 'Password reset successfully. You can now log in.');
             $this->redirect(route('login'), navigate: true);
+
+            return;
         }
 
         $this->errorMessage = 'Invalid or expired reset token.';
@@ -72,7 +74,6 @@ class ResetPassword extends Component
      */
     public function render()
     {
-        return view('auth::auth.reset-password')
-            ->layout('core::layouts.app');
+        return view('auth::auth.reset-password');
     }
 }

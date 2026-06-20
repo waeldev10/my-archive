@@ -15,6 +15,11 @@
     <source>
         <include>
             <directory>app</directory>
+            <directory>Modules/Core</directory>
+            <directory>Modules/Auth</directory>
+            <directory>Modules/Archives</directory>
+            <directory>Modules/Dashboard</directory>
+            <directory>Modules/Tags</directory>
         </include>
     </source>
     <php>

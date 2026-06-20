@@ -2,10 +2,7 @@
 
 declare(strict_types=1);
 
-use Modules\Auth\Livewire\ForgotPassword;
-use Modules\Auth\Livewire\Login;
-use Modules\Auth\Livewire\Register;
-use Modules\Auth\Livewire\ResetPassword;
+use Modules\Auth\Http\Controllers\Web\AuthController;
 use Modules\Auth\Http\Controllers\Web\SocialiteController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,16 +11,17 @@ use Illuminate\Support\Facades\Route;
 | Auth Web Routes
 |--------------------------------------------------------------------------
 |
-| Authentication web UI routes using Livewire full-page components.
+| Authentication web UI routes, following the Controller → Blade Page →
+| Livewire Components entry pattern.
 |
 */
 
 // Guest routes
 Route::middleware('guest')->group(function (): void {
-    Route::get('login', Login::class)->name('login');
-    Route::get('register', Register::class)->name('register');
-    Route::get('forgot-password', ForgotPassword::class)->name('password.request');
-    Route::get('reset-password/{token}', ResetPassword::class)->name('password.reset');
+    Route::get('login', [AuthController::class, 'login'])->name('login');
+    Route::get('register', [AuthController::class, 'register'])->name('register');
+    Route::get('forgot-password', [AuthController::class, 'forgotPassword'])->name('password.request');
+    Route::get('reset-password/{token}', [AuthController::class, 'resetPassword'])->name('password.reset');
 
     // Google OAuth
     Route::get('auth/google/redirect', [SocialiteController::class, 'redirect'])->name('google.redirect');
@@ -32,24 +30,12 @@ Route::middleware('guest')->group(function (): void {
 
 // Authenticated routes
 Route::middleware('auth')->group(function (): void {
-    Route::post('logout', function () {
-        auth()->logout();
-        session()->invalidate();
-        session()->regenerateToken();
-
-        return redirect('/');
-    })->name('logout');
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 // Email verification routes
-Route::get('email/verify/{id}/{hash}', function (\Illuminate\Foundation\Auth\EmailVerificationRequest $request) {
-    $request->fulfill();
+Route::get('email/verify/{id}/{hash}', [AuthController::class, 'verifyEmail'])
+    ->middleware(['auth', 'signed'])->name('verification.verify');
 
-    return redirect()->route('dashboard');
-})->middleware(['auth', 'signed'])->name('verification.verify');
-
-Route::post('email/verification-notification', function (\Illuminate\Http\Request $request) {
-    $request->user()->sendEmailVerificationNotification();
-
-    return back()->with('success', 'Verification link sent!');
-})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+Route::post('email/verification-notification', [AuthController::class, 'resendVerification'])
+    ->middleware(['auth', 'throttle:6,1'])->name('verification.send');

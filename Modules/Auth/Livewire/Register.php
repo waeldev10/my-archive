@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Auth\Livewire;
 
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
-use Modules\Auth\Models\User;
+use Modules\Auth\Services\AuthService;
 
 class Register extends Component
 {
@@ -38,19 +36,23 @@ class Register extends Component
         $this->isLoading = true;
         $this->errorMessage = null;
 
-        $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
-        ]);
+        try {
+            /** @var AuthService $service */
+            $service = app(AuthService::class);
+            $user = $service->registerWeb([
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => $this->password,
+            ]);
 
-        event(new Registered($user));
+            Auth::login($user);
 
-        Auth::login($user);
+            session()->flash('success', 'Account created! Please verify your email.');
 
-        session()->flash('success', 'Account created! Please verify your email.');
-
-        $this->redirect(route('dashboard'), navigate: true);
+            $this->redirect(route('dashboard'), navigate: true);
+        } catch (\Exception $e) {
+            $this->errorMessage = 'Registration failed. Please try again.';
+        }
 
         $this->isLoading = false;
     }
@@ -60,7 +62,6 @@ class Register extends Component
      */
     public function render()
     {
-        return view('auth::auth.register')
-            ->layout('core::layouts.app');
+        return view('auth::auth.register');
     }
 }

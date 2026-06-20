@@ -2,27 +2,21 @@
 
 declare(strict_types=1);
 
-use App\Livewire\Dashboard;
 use Illuminate\Support\Facades\Route;
+use Modules\Core\Http\Controllers\PageController;
 
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 |
-| Application-level web routes (welcome page, dashboard).
+| Application-level web routes (welcome page).
 | Module-specific routes are loaded by their service providers:
 |   - Auth:     Modules/Auth/Providers/AuthServiceProvider
 |   - Archives: Modules/Archives/Providers/ArchiveServiceProvider
+|   - Dashboard: Modules/Dashboard/Providers/DashboardServiceProvider
 |
 */
 
-// Welcome page
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-
-// Authenticated routes
-Route::middleware('auth')->group(function (): void {
-    Route::get('dashboard', Dashboard::class)->name('dashboard');
-});
+// Welcome page — controller entry point
+Route::get('/', [PageController::class, 'welcome'])->name('home');

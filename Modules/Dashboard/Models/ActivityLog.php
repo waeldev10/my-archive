@@ -2,18 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Models;
+namespace Modules\Dashboard\Models;
 
+use Modules\Archives\Models\Archive;
+use Modules\Auth\Models\User;
 use Modules\Core\Traits\UsesUlid;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * Model for the activity_logs table.
+ *
+ * Records user actions (archive created, updated, deleted, restored, favorited, unfavorited)
+ * for display on the dashboard activity feed. Immutable — only inserts, never updated.
+ */
 class ActivityLog extends Model
 {
     use UsesUlid;
 
     /**
      * The table associated with the model.
+     *
+     * @var string
      */
     protected $table = 'activity_logs';
 
@@ -32,6 +42,8 @@ class ActivityLog extends Model
     /**
      * Indicates if the model should be timestamped.
      * Activity logs are immutable — only created_at is used.
+     *
+     * @var bool
      */
     public $timestamps = false;
 
@@ -48,7 +60,7 @@ class ActivityLog extends Model
     }
 
     /**
-     * Boot the model.
+     * Boot the model and set created_at on creation.
      */
     protected static function boot(): void
     {

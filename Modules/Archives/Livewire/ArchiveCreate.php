@@ -92,9 +92,6 @@ class ArchiveCreate extends Component
     /** @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile|null */
     public $file = null;
 
-    /** @var array<string> */
-    public array $newTag = [];
-
     public function mount(string $type): void
     {
         $this->type = $type;
@@ -271,7 +268,6 @@ class ArchiveCreate extends Component
 
     public function render()
     {
-        return view('archives::archives.create')
-            ->layout('core::layouts.app');
+        return view('archives::archives.create');
     }
 }

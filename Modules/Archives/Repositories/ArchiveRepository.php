@@ -71,6 +71,7 @@ class ArchiveRepository
         return Archive::where('user_id', $user->id)
             ->where('type', $type)
             ->onlyTrashed()
+            ->with('tags')
             ->orderBy('deleted_at', 'desc')
             ->paginate(20);
     }
@@ -84,6 +85,7 @@ class ArchiveRepository
             ->whereHas('tags', function ($q) use ($tagName) {
                 $q->where('name', $tagName);
             })
+            ->with('tags')
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
@@ -95,6 +97,7 @@ class ArchiveRepository
     {
         return Archive::where('user_id', $user->id)
             ->where('is_favorite', true)
+            ->with('tags')
             ->orderBy('updated_at', 'desc')
             ->paginate($perPage);
     }

@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Modules\Archives\Repositories\ArchiveRepository;
-use Modules\Archives\Services\ArchiveFactory;
+use Modules\Archives\Services\ArchiveService;
 
 class ArchiveList extends Component
 {
@@ -80,12 +80,12 @@ class ArchiveList extends Component
      */
     public function toggleFavorite(string $id): void
     {
-        /** @var \Modules\Archives\Repositories\ArchiveRepository $repository */
-        $repository = app(ArchiveRepository::class);
-        $archive = $repository->findOwned(auth()->user(), $id);
+        /** @var ArchiveService $service */
+        $service = app(ArchiveService::class);
+        $archive = $service->find(auth()->user(), $id);
 
         if ($archive !== null) {
-            $archive->update(['is_favorite' => ! $archive->is_favorite]);
+            $service->toggleFavorite($archive);
         }
     }
 
@@ -94,19 +94,18 @@ class ArchiveList extends Component
      */
     public function delete(string $id): void
     {
-        /** @var \Modules\Archives\Repositories\ArchiveRepository $repository */
-        $repository = app(ArchiveRepository::class);
-        $archive = $repository->findOwned(auth()->user(), $id);
+        /** @var ArchiveService $service */
+        $service = app(ArchiveService::class);
+        $archive = $service->find(auth()->user(), $id);
 
         if ($archive !== null) {
-            $archive->delete();
+            $service->delete($archive);
             session()->flash('success', 'Archive moved to trash.');
         }
     }
 
     public function render()
     {
-        return view('archives::archives.list')
-            ->layout('core::layouts.app');
+        return view('archives::archives.list');
     }
 }

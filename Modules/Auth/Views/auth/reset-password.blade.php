@@ -1,57 +1,51 @@
 <div>
     <div class="mx-auto max-w-md">
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Set New Password</h1>
-        <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Enter your new password below.
+        <h1 class="text-2xl font-bold text-[var(--color-foreground)]">@lang('Set New Password')</h1>
+        <p class="mt-2 text-sm text-[var(--color-foreground-secondary)]">
+            @lang('Enter your new password below.')
         </p>
 
         <form wire:submit="resetPassword" class="mt-6 space-y-4">
-            <!-- Email (hidden, for context) -->
-            <div>
-                <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                <input
-                    wire:model.blur="email"
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400"
-                    required
-                />
-                @error('email') <span class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</span> @enderror
-            </div>
+            {{-- Email --}}
+            <x-core::input
+                label="Email"
+                name="email"
+                type="email"
+                model="email"
+                blur
+                required
+            />
 
-            <!-- New Password -->
-            <div>
-                <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Password</label>
-                <input
-                    wire:model.blur="password"
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400"
-                    required
-                />
-                @error('password') <span class="mt-1 text-xs text-red-600 dark:text-red-400">{{ $message }}</span> @enderror
-            </div>
+            {{-- New Password --}}
+            <x-core::input
+                label="New Password"
+                name="password"
+                type="password"
+                model="password"
+                blur
+                required
+            />
 
-            <!-- Confirm Password -->
-            <div>
-                <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm New Password</label>
-                <input
-                    wire:model.blur="password_confirmation"
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:focus:border-gray-400"
-                    required
-                />
-            </div>
+            {{-- Confirm Password --}}
+            <x-core::input
+                label="Confirm New Password"
+                name="password_confirmation"
+                type="password"
+                model="password_confirmation"
+                blur
+                required
+            />
 
+            {{-- Error --}}
             @if ($errorMessage)
-                <div class="rounded-lg bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/50 dark:text-red-200">
-                    {{ $errorMessage }}
-                </div>
+                <x-core::alert type="danger" :message="$errorMessage" />
             @endif
 
-            <button type="submit" class="w-full rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200">
-                {{ $isLoading ? 'Resetting...' : 'Reset Password' }}
+            {{-- Submit --}}
+            <button type="submit" wire:loading.attr="disabled"
+                    class="w-full rounded-lg bg-[var(--color-foreground)] px-4 py-2 text-sm font-medium text-[var(--color-foreground-inverse)] hover:opacity-90 disabled:opacity-50 transition-opacity cursor-pointer">
+                <span wire:loading.remove wire:target="resetPassword">@lang('Reset Password')</span>
+                <span wire:loading wire:target="resetPassword">@lang('Resetting...')</span>
             </button>
         </form>
     </div>

@@ -8,7 +8,6 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Modules\Archives\DTOs\ArchiveData;
 use Modules\Archives\Models\Archive;
-use Modules\Archives\Repositories\ArchiveRepository;
 use Modules\Archives\Services\ArchiveService;
 use Modules\Archives\Services\FileUploadService;
 
@@ -95,12 +94,9 @@ class ArchiveEdit extends Component
     /** @var \Livewire\Features\SupportFileUploads\TemporaryUploadedFile|null */
     public $file = null;
 
-    public string $newTag = '';
-
-    public function mount(string $type, string $archive): void
+    public function mount(string $type): void
     {
         $this->type = $type;
-        $this->archiveId = $archive;
 
         $this->loadArchive();
     }
@@ -110,9 +106,9 @@ class ArchiveEdit extends Component
      */
     private function loadArchive(): void
     {
-        /** @var ArchiveRepository $repository */
-        $repository = app(ArchiveRepository::class);
-        $archive = $repository->findOwned(auth()->user(), $this->archiveId);
+        /** @var ArchiveService $service */
+        $service = app(ArchiveService::class);
+        $archive = $service->find(auth()->user(), $this->archiveId);
 
         if ($archive === null) {
             abort(404);
@@ -124,7 +120,8 @@ class ArchiveEdit extends Component
         $this->tags = $archive->tags->pluck('name')->toArray();
 
         // Load type-specific fields from extension
-        $extension = $archive->extension()->first();
+        $extensionRelation = $archive->extension();
+        $extension = $extensionRelation ? $extensionRelation->first() : null;
         if ($extension !== null) {
             $extData = $extension->toArray();
             foreach ($extData as $key => $value) {
@@ -169,16 +166,13 @@ class ArchiveEdit extends Component
                 $this->validate($rules);
             }
 
-            /** @var ArchiveRepository $repository */
-            $repository = app(ArchiveRepository::class);
-            $archive = $repository->findOwned(auth()->user(), $this->archiveId);
+            /** @var ArchiveService $service */
+            $service = app(ArchiveService::class);
+            $archive = $service->find(auth()->user(), $this->archiveId);
 
             if ($archive === null) {
                 abort(404);
             }
-
-            /** @var ArchiveService $service */
-            $service = app(ArchiveService::class);
 
             $service->update(
                 $archive,
@@ -320,7 +314,6 @@ class ArchiveEdit extends Component
 
     public function render()
     {
-        return view('archives::archives.edit')
-            ->layout('core::layouts.app');
+        return view('archives::archives.edit');
     }
 }

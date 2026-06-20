@@ -36,9 +36,11 @@ class Login extends Component
             session()->regenerate();
 
             $this->redirect(route('dashboard'), navigate: true);
+
+            return;
         }
 
-        $this->errorMessage = 'Invalid email or password.';
+        $this->errorMessage = __('Invalid email or password.');
         $this->isLoading = false;
     }
 
@@ -47,7 +49,6 @@ class Login extends Component
      */
     public function render()
     {
-        return view('auth::auth.login')
-            ->layout('core::layouts.app');
+        return view('auth::auth.login');
     }
 }

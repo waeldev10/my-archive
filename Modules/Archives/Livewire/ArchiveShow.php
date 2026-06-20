@@ -6,6 +6,7 @@ namespace Modules\Archives\Livewire;
 
 use Livewire\Component;
 use Modules\Archives\Models\Archive;
+use Modules\Archives\Services\ArchiveService;
 
 class ArchiveShow extends Component
 {
@@ -13,21 +14,15 @@ class ArchiveShow extends Component
 
     public string $archiveId;
 
-    public function mount(string $type, string $archive): void
-    {
-        $this->type = $type;
-        $this->archiveId = $archive;
-    }
-
     /**
-     * Get the archive model.
+     * Get the archive model via service.
      */
     public function getArchiveProperty(): ?Archive
     {
-        return Archive::where('id', $this->archiveId)
-            ->where('user_id', auth()->id())
-            ->with('tags')
-            ->first();
+        /** @var ArchiveService $service */
+        $service = app(ArchiveService::class);
+
+        return $service->find(auth()->user(), $this->archiveId);
     }
 
     /**
@@ -38,7 +33,9 @@ class ArchiveShow extends Component
         $archive = $this->archive;
 
         if ($archive !== null) {
-            $archive->update(['is_favorite' => ! $archive->is_favorite]);
+            /** @var ArchiveService $service */
+            $service = app(ArchiveService::class);
+            $service->toggleFavorite($archive);
         }
     }
 
@@ -50,7 +47,9 @@ class ArchiveShow extends Component
         $archive = $this->archive;
 
         if ($archive !== null) {
-            $archive->delete();
+            /** @var ArchiveService $service */
+            $service = app(ArchiveService::class);
+            $service->delete($archive);
             session()->flash('success', 'Archive moved to trash.');
             $this->redirect(route('archives.list', ['type' => $this->type]), navigate: true);
         }
@@ -58,7 +57,6 @@ class ArchiveShow extends Component
 
     public function render()
     {
-        return view('archives::archives.show')
-            ->layout('core::layouts.app');
+        return view('archives::archives.show');
     }
 }
